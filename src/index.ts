@@ -140,7 +140,7 @@ function main(options: ProgramOptions): void {
 program
   .option('-v, --verbose', 'Display verbose log')
   .option('--config <path>', 'Path to suppressConfig')
-  .option('--stat [path]', 'Display suppress stat')
+  .option('--stat <path>', 'Display suppress stat')
   .option('--strict-scope', 'Error scopeId would be as deep as possible')
   .option('--changed', 'Only check changed files compared with target_branch')
   .option('--create-default', 'Create a .ts-bulk-suppressions.json file')
