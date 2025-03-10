@@ -33,7 +33,7 @@ function main(options: ProgramOptions): void {
   log.info(`Using TypeScript compiler version ${ts.version}`);
 
   if (options.createDefault) {
-    log.info(`Create default bulk.config.json at ${process.cwd()}`);
+    log.info(`Create default .ts-bulk-suppressions.json at ${process.cwd()}`);
     createDefaultIgnore();
     return;
   }
@@ -111,7 +111,7 @@ function main(options: ProgramOptions): void {
       ...mergedConfig.bulkSuppressors
     ]);
 
-    writeJSONSync(mergedConfig.config || 'bulk.config.json', configFromFile, { spaces: 2 });
+    writeJSONSync(mergedConfig.config || '.ts-bulk-suppressions.json', configFromFile, { spaces: 2 });
     log.info('Project patched with bulk-suppressor');
     process.exit(0);
   }
@@ -143,7 +143,7 @@ program
   .option('--stat [path]', 'Display suppress stat')
   .option('--strict-scope', 'Error scopeId would be as deep as possible')
   .option('--changed', 'Only check changed files compared with target_branch')
-  .option('--create-default', 'Create a bulk.config.json file')
+  .option('--create-default', 'Create a .ts-bulk-suppressions.json file')
   .option('--gen-bulk-suppress', 'Patch bulk-suppressor for current project')
   .option('--ignore-config-error', 'Ignore config-related errors')
   .option('--ignore-external-error', 'Ignore external errors')

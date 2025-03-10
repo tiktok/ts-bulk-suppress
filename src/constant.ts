@@ -75,7 +75,7 @@ export const BULK_CONFIG_SCHEMA: JSONSchemaType<BulkConfig> = {
 };
 
 export const DEFAULT_BULK_CONFIG: BulkConfig = {
-  $schema: 'https://json-schema.byteintl.net/ts-bulk-suppress/bulk.config.json',
+  $schema: 'https://tiktok.github.io/ts-bulk-suppress/schemas/ts-bulk-suppressions.schemas.json',
   project: './tsconfig.json',
   patternSuppressors: [],
   bulkSuppressors: [],

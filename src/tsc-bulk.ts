@@ -276,7 +276,7 @@ export function parseBulkConfig(config: object): BulkConfig {
 }
 
 export function createDefaultIgnore(): void {
-  fs.writeFileSync('bulk.config.json', JSON.stringify(DEFAULT_BULK_CONFIG, null, 2));
+  fs.writeFileSync('.ts-bulk-suppressions.json', JSON.stringify(DEFAULT_BULK_CONFIG, null, 2));
 }
 
 export function categorizeDiagnostics(
@@ -345,33 +345,34 @@ export function getBulkConfig(options: ProgramOptions): {
   mergedConfig: BulkConfig & ProgramOptions;
   configFromFile: BulkConfig;
 } {
-  const configPath = options.config ?? findConfigFile(process.cwd(), ts.sys.fileExists, 'bulk.config.json');
+  const configPath =
+    options.config ?? findConfigFile(process.cwd(), ts.sys.fileExists, '.ts-bulk-suppressions.json');
 
   if (!configPath || !existsSync(configPath)) {
     if (options.genBulkSuppress) {
       const tsconfigFilePath = findConfigFile(process.cwd(), ts.sys.fileExists, 'tsconfig.json');
       if (!tsconfigFilePath || !existsSync(tsconfigFilePath)) {
         throw Error(
-          'Unable to locate tsconfig.json and bulk.config.json, please cd to your project root and run again'
+          'Unable to locate tsconfig.json and .ts-bulk-suppressions.json, please cd to your project root and run again'
         );
       }
 
       const dirname = path.dirname(tsconfigFilePath);
 
-      writeJSONSync(path.resolve(dirname, 'bulk.config.json'), DEFAULT_BULK_CONFIG);
+      writeJSONSync(path.resolve(dirname, '.ts-bulk-suppressions.json'), DEFAULT_BULK_CONFIG);
 
       return {
         mergedConfig: {
           ...DEFAULT_BULK_CONFIG,
           ...options,
           project: path.resolve(tsconfigFilePath),
-          config: path.resolve(dirname, 'bulk.config.json')
+          config: path.resolve(dirname, '.ts-bulk-suppressions.json')
         },
         configFromFile: DEFAULT_BULK_CONFIG
       };
     }
     throw Error(
-      'Unable to locate bulk.config.json. cd to your where your tsconfig.json locates and run npx ts-bulk-suppress --create-default.'
+      'Unable to locate .ts-bulk-suppressions.json. cd to your where your tsconfig.json locates and run npx ts-bulk-suppress --create-default.'
     );
   }
 

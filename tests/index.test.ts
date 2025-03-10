@@ -5,16 +5,16 @@ import { rmSync, existsSync } from 'fs-extra';
 describe('App pass test', () => {
   const toolScriptPath = path.resolve(__dirname, '../dist/index.js');
   const appDir = path.resolve(__dirname, 'fixtures', 'node');
-  const bulkConfigPath = path.resolve(appDir, 'bulk.config.json');
+  const bulkConfigPath = path.resolve(appDir, '.ts-bulk-suppressions.json');
 
-  it(`won't pass without any bulk.config.json`, () => {
+  it(`won't pass without any .ts-bulk-suppressions.json`, () => {
     if (existsSync(bulkConfigPath)) rmSync(bulkConfigPath);
     expect(() => {
       execSync(`node ${toolScriptPath}`, { cwd: appDir });
     }).toThrow();
   });
 
-  it(`generates bulk.config.json`, () => {
+  it(`generates .ts-bulk-suppressions.json`, () => {
     execSync(`node ${toolScriptPath} --gen-bulk-suppress `, { cwd: appDir });
     expect(existsSync(bulkConfigPath)).toBe(true);
   });
