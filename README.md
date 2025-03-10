@@ -15,7 +15,7 @@ export function getSquared(length): number {
 }
 ```
 
-The compiler does not provide the best validation for this function, because the type of `a` is not checked; it is treated as the `any` type.  With newer versions of TypeScript, you can enable [noImplicitAny](https://www.typescriptlang.org/tsconfig/noImplicitAny.html) in your **tsconfig.json** file.  This way, the compiler insists on declaring `length: number`:
+The compiler does not provide the best validation for this function, because the type of `length` is not checked; it is treated as the `any` type.  With newer versions of TypeScript, you can enable [noImplicitAny](https://www.typescriptlang.org/tsconfig/noImplicitAny.html) in your **tsconfig.json** file.  This way, the compiler insists on declaring `length: number`:
 
 ```
 my-project/src/index.ts:179:28 - error TS7006: Parameter 'length' implicitly has an 'any' type.
