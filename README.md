@@ -21,9 +21,9 @@ The compiler does not provide the best validation for this function, because the
 my-project/src/index.ts:179:28 - error TS7006: Parameter 'length' implicitly has an 'any' type.
 ```
 
-In a large codebase, with this change you are likely to suddenly see thousands of errors `TS7006` across thousands of source files.  How to deal with that?  The idea is to introduce a suppressions file **bulk.config.json** that will list all of the preexisting errors, so that `ts-bulk-suppress` knows to filter them out when it invokes the compiler.  This file is added to Git as part of your project. 
+In a large codebase, with this change you are likely to suddenly see thousands of errors `TS7006` across thousands of source files.  How to deal with that?  The idea is to introduce a suppressions file **.ts-bulk-suppressions.json** that will list all of the preexisting errors, so that `ts-bulk-suppress` knows to filter them out when it invokes the compiler.  This file is added to Git as part of your project. 
 
-What goes in that file?  We could make a list of file paths such as **my-project/src/index.ts** and ignore any `TS7006` errors for those files, however it turns out that this is not strict enough.  In each of those file paths, engineers would be free to write as much new code as they like, introducing lots more problems over time.  It would be much better to suppress specific line numbers (line `:179` in our example), however this proves too brittle:  Any future change that adds or removes lines could shift the line numbers, breaking our suppression.  And even if engineers try to fix **bulk.config.json**, they will constantly create Git merge conflicts with other engineers working on the same file.
+What goes in that file?  We could make a list of file paths such as **my-project/src/index.ts** and ignore any `TS7006` errors for those files, however it turns out that this is not strict enough.  In each of those file paths, engineers would be free to write as much new code as they like, introducing lots more problems over time.  It would be much better to suppress specific line numbers (line `:179` in our example), however this proves too brittle:  Any future change that adds or removes lines could shift the line numbers, breaking our suppression.  And even if engineers try to fix **.ts-bulk-suppressions.json**, they will constantly create Git merge conflicts with other engineers working on the same file.
 
 Instead `ts-bulk-suppress` and `@rushstack/eslint-patch` introduce a `scopeId` identifier, which is basically the name of the function and any containing scopes.  In our above example, the `scopeId` would be `.getSquared`.  This allows suppressions to be constrained to specific sections of code in a specific file, such that adding/removing unrelated lines will not break the `scopeId`.  See below for technical details.
 
@@ -33,25 +33,25 @@ Here's how to use `ts-bulk-suppress` with your existing project:
 
 1. It's recommended to install the tool by running `pnpm install ts-bulk-suppress --dev`.  (Instead of `pnpm`, you can substitute `npm` or `yarn` according to your package manager preference.)
 
-2. As an example, let's assume that we just enabled `noImplicitAny` and are now facing thousands of errors.  Run this command to automatically generate the **bulk.config.json** file:
+2. As an example, let's assume that we just enabled `noImplicitAny` and are now facing thousands of errors.  Run this command to automatically generate the **.ts-bulk-suppressions.json** file:
 
    ```shell
-   # Create a bulk.config.json file with suppressions for all compiler errors
+   # Create a .ts-bulk-suppressions.json file with suppressions for all compiler errors
    ts-bulk-suppress --gen-bulk-suppress
    ```
 
 3. Make sure the file is tracked by Git:
   
    ```shell
-   git add bulk.config.json
+   git add .ts-bulk-suppressions.json
    git commit -m "Enabling bulk suppressions"
    ```
 
 4. At this point, if you run the `tsc` command (the official TypeScript compiler), you will still see thousands of errors.  But if you instead run `ts-bulk-suppress`, the suppressed errors will be hidden.
 
-5. You can also add manual configurations to **bulk.config.json**.  For example, suppose that `my-project/src/legacy-sdk` contains hundreds of files that we never intend to fix.  Rather than tracking thousands of individual suppressions, you could add a manual rule like this:
+5. You can also add manual configurations to **.ts-bulk-suppressions.json**.  For example, suppose that `my-project/src/legacy-sdk` contains hundreds of files that we never intend to fix.  Rather than tracking thousands of individual suppressions, you could add a manual rule like this:
 
-   **my-project/bulk.config.json**
+   **my-project/.ts-bulk-suppressions.json**
    ```js
      . . .
      "patternSuppressors": [
@@ -106,7 +106,7 @@ Options:
   --stat [path]            Display suppress stat
   --strict-scope           Error scopeId would be as deep as possible
   --changed                Only check changed files compared with target_branch
-  --create-default         Create a bulk.config.json file
+  --create-default         Create a .ts-bulk-suppressions.json file
   --gen-bulk-suppress      Patch bulk-suppressor for current project
   --ignore-config-error    Ignore config-related errors
   --ignore-external-error  Ignore external errors
@@ -119,13 +119,13 @@ Our `scopeId` design is based on the approach from [@rushstack/eslint-bulk](http
 
 1. We use `ts-morph` instead of `estree` to parse the Abstract Syntax Tree (AST), so the hierarchy may be slightly different.
 
-2. The standard `scopeId` can match multiple TypeScript code blocks. For more fine-grained matching, you can set `"strictScope": true` in **bulk.config.json**, which will produce a much longer `scopeId` for more accurate matching.
+2. The standard `scopeId` can match multiple TypeScript code blocks. For more fine-grained matching, you can set `"strictScope": true` in **.ts-bulk-suppressions.json**, which will produce a much longer `scopeId` for more accurate matching.
 
-## bulk.config.json example
+## .ts-bulk-suppressions.json example
 
-Below is a more detailed example for the **bulk.config.json** file format:
+Below is a more detailed example for the **.ts-bulk-suppressions.json** file format:
 
- **my-project/bulk.config.json**
+ **my-project/.ts-bulk-suppressions.json**
 ```js
 {
   "project": "./tsconfig.json", //path to tsconfig.json
