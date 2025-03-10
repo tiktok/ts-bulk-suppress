@@ -1,0 +1,29 @@
+name: Publish NPM Packages
+on: workflow_dispatch
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 20
+      - name: git config email
+        run: git config --local user.email tiktokbot@users.noreply.github.com
+      - name: git config name
+        run: git config --local user.name tiktokbot
+      - uses: pnpm/action-setup@v2
+        with:
+          version: 8.15.1
+      - name: Install Dependencies
+        run: pnpm install
+      - name: Build project
+        run: pnpm run build
+      - name: Run tests
+        run: pnpm run test
+      - name: Publish to NPM
+        env:
+          NPM_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
+        run: |
+          npm config set "//registry.npmjs.org/:_authToken" "${NPM_AUTH_TOKEN}"
+          pnpm publish --no-git-checks
