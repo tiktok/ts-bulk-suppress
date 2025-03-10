@@ -1,0 +1,87 @@
+
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "bulkConfig",
+  "description": "A JSON file to describe a error filter of tsc-bulk",
+  "type": "object",
+  "properties": {
+    "$schema": {
+      "description": "Part of the JSON Schema standard, this optional keyword declares the URL of the schema that the file conforms to. Editors may download the schema and use it to perform syntax highlighting.",
+      "type": "string"
+    },
+    "project": {
+      "description": "tsconfig's relative path",
+      "type": "string"
+    },
+    "strictScope": {
+      "description": "ScopeId would be as deep as possible",
+      "type": "boolean",
+      "nullable": true
+    },
+    "ignoreConfigError": {
+      "description": "Won't report configRelatedError",
+      "type": "boolean",
+      "nullable": true
+    },
+    "ignoreExternalError": {
+      "description": "Won't report error outside of this project",
+      "type": "boolean",
+      "nullable": true
+    },
+    "patternSuppressors": {
+      "description": "Suppressors to suppress specific error codes inside some paths",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "pathRegExp": {
+            "type": "string"
+          },
+          "codes": {
+            "type": "array",
+            "items": {
+              "type": "number"
+            },
+            "nullable": true
+          },
+          "suppressAll": {
+            "type": "boolean",
+            "nullable": true
+          }
+        },
+        "required": [
+          "pathRegExp"
+        ]
+      }
+    },
+    "bulkSuppressors": {
+      "description": "Suppressors to suppress base on scopeId",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "filename": {
+            "type": "string"
+          },
+          "scopeId": {
+            "type": "string"
+          },
+          "code": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "filename",
+          "scopeId",
+          "code"
+        ]
+      }
+    }
+  },
+  "required": [
+    "patternSuppressors",
+    "bulkSuppressors",
+    "project",
+    "$schema"
+  ]
+}
