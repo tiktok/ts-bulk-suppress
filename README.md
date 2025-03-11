@@ -103,7 +103,7 @@ Arguments:
 Options:
   -v, --verbose            Display verbose log
   --config <path>          Path to suppressConfig
-  --stat [path]            Display suppress stat
+  --stat <path>            Display suppress stat
   --strict-scope           Error scopeId would be as deep as possible
   --changed                Only check changed files compared with target_branch
   --create-default         Create a .ts-bulk-suppressions.json file
