@@ -119,6 +119,14 @@ export function findDiagnosticsScopeId(d: DiagnosticTsc, isStrictScope: boolean)
   return `.${results.join('.')}`;
 }
 
+// if stdout is being piped to another destination, print diagnostics
+// without pretty colours. This matches the behaviour of TSC:
+// https://github.com/microsoft/TypeScript/blob/0652664e/src/compiler/executeCommandLine.ts#L161
+const formatDiagnostics =
+  process.env.NO_COLOR || !process.stdout.isTTY
+    ? ts.formatDiagnostics
+    : ts.formatDiagnosticsWithColorAndContext;
+
 export function assertDiagnostics(
   configRelatedErrors: readonly DiagnosticTsc[],
   projectErrors: readonly DiagnosticTsc[],
@@ -133,7 +141,7 @@ export function assertDiagnostics(
     return 0;
   }
   if (!bulkConfig) {
-    log.info(ts.formatDiagnosticsWithColorAndContext(diagnostics, host));
+    log.info(formatDiagnostics(diagnostics, host));
     return diagnostics.length;
   }
 
@@ -185,7 +193,7 @@ export function assertDiagnostics(
       else projectStat.externalErrors.push(dStat);
     });
 
-    const formattedLog = ts.formatDiagnosticsWithColorAndContext(diagnosticsToShow, host);
+    const formattedLog = formatDiagnostics(diagnosticsToShow, host);
 
     projectStat.raw = formattedLog;
 
